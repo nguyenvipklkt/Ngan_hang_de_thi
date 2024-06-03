@@ -1,0 +1,28 @@
+Ma cau hoi : H0001
+Noi dung : abc
+A. A
+B. B
+C. C
+D. D
+Dap an chinh xac : A
+Ma cau hoi : H0002
+Noi dung : Em com chua
+A. roi
+B. chua
+C. ok
+D. ko
+Dap an chinh xac : C
+Ma cau hoi : H0003
+Noi dung : bbbbbbb
+A. a
+B. d
+C. c
+D. s
+Dap an chinh xac : D
+Ma cau hoi : H0005
+Noi dung : em be oi ?
+A. oi
+B. gi
+C. sao
+D. cut
+Dap an chinh xac : A

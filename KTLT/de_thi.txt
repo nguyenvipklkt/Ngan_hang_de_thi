@@ -1,0 +1,18 @@
+Ma cau hoi : H0002
+Noi dung : Em com chua
+A. roi
+B. chua
+C. ok
+D. ko
+Ma cau hoi : H0005
+Noi dung : em be oi ?
+A. oi
+B. gi
+C. sao
+D. cut
+Ma cau hoi : H0003
+Noi dung : bbbbbbb
+A. a
+B. d
+C. c
+D. s
