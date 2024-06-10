@@ -1,0 +1,6 @@
+So cau tra loi dung: 0/2
+Diem cua ban: 0
+=============================
+So cau tra loi dung: 1/2
+Diem cua ban: 5
+=============================

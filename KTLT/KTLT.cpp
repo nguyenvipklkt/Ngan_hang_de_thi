@@ -204,8 +204,9 @@ void suaCauHoi(std::vector<CauHoi>& danhSachCauHoi) {
             break;
         }
     }
+
     if (!found) {
-        std::cout << "Khong tim thay ma cau hoi." << std::endl;
+        std::cerr << "Khong tim thay ma cau hoi: " << maCauHoi << std::endl;
     }
 }
 
@@ -215,150 +216,117 @@ void xoaCauHoi(std::vector<CauHoi>& danhSachCauHoi) {
     std::cin.ignore();
     std::getline(std::cin, maCauHoi);
 
-    auto it = danhSachCauHoi.begin();
-    bool found = false;
-    while (it != danhSachCauHoi.end()) {
-        if ((it->getMaCauHoi()) == ("Ma cau hoi : " + maCauHoi)) {
-            found = true;
-            it = danhSachCauHoi.erase(it);
-            std::cout << "Da xoa cau hoi thanh cong." << std::endl;
-        }
-        else {
-            ++it;
-        }
-    }
+    auto it = std::remove_if(danhSachCauHoi.begin(), danhSachCauHoi.end(),
+        [&maCauHoi](const CauHoi& cauHoi) {
+            return cauHoi.getMaCauHoi() == ("Ma cau hoi : " + maCauHoi);
+        });
 
-    if (!found) {
-        std::cerr << "Khong tim thay cau hoi voi ma cau hoi: " << maCauHoi << std::endl;
-    }
-    else {
-        // Cập nhật danh sách câu hỏi vào file
+    if (it != danhSachCauHoi.end()) {
+        danhSachCauHoi.erase(it, danhSachCauHoi.end());
+        // Ghi danh sách câu hỏi sau khi xóa vào file
         ghiDanhSachCauHoiVaoFile(danhSachCauHoi);
-    }
-}
-
-void ghiDeVaoFile(const std::vector<CauHoi>& danhSachCauHoi) {
-    std::ofstream file("de_thi.txt");
-    if (file.is_open()) {
-        for (const auto& cauHoi : danhSachCauHoi) {
-            file << cauHoi.getMaCauHoi() << std::endl;
-            file << cauHoi.getNoiDung() << std::endl;
-            for (int i = 0; i < DAPAN; ++i) {
-                file << cauHoi.getDapAn(i) << std::endl;
-            }
-            // Do not write the correct answer to the file
-            // file << cauHoi.getDapAnDung() << std::endl;
-        }
-        file.close();
+        std::cout << "Da xoa cau hoi thanh cong." << std::endl;
     }
     else {
-        std::cerr << "Khong the ghi vao file." << std::endl;
+        std::cerr << "Khong tim thay ma cau hoi: " << maCauHoi << std::endl;
     }
 }
 
-void docDeTuFile(std::vector<CauHoi>& danhSachCauHoi) {
-    std::ifstream file("de_thi.txt");
-    if (file.is_open()) {
-        std::string maCauHoi, noiDung, dapAn[DAPAN];
-        while (std::getline(file, maCauHoi) && std::getline(file, noiDung)) {
-            for (int i = 0; i < DAPAN; ++i) {
-                std::getline(file, dapAn[i]);
-            }
-            CauHoi ch(maCauHoi, noiDung, dapAn, "");
-            danhSachCauHoi.push_back(ch);
-        }
-        file.close();
-    }
-    else {
-        std::cerr << "Khong the mo file." << std::endl;
+void hoanVi(int a[], int n) {
+    srand(time(NULL));
+    for (int i = n - 1; i >= 1; i--) {
+        int j = rand() % (i + 1);
+        std::swap(a[i], a[j]);
     }
 }
 
-
-void sinhDeThiNgauNhien(std::vector<CauHoi>& danhSachCauHoi, int soCauHoi) {
-    std::vector<CauHoi> deThi;
-    std::srand(std::time(0));
-    std::random_shuffle(danhSachCauHoi.begin(), danhSachCauHoi.end());
-    for (int i = 0; i < soCauHoi && i < danhSachCauHoi.size(); ++i) {
-        deThi.push_back(danhSachCauHoi[i]);
-    }
-    ghiDeVaoFile(deThi);
-    std::cout << "Da tao de thi voi " << soCauHoi << " cau hoi va luu vao file de_thi.txt" << std::endl;
-}
-
-void thi(const std::vector<CauHoi>& danhSachCauHoi) {
-    std::ifstream file("danh_sach_cau_hoi.txt");
-    if (!file.is_open()) {
-        std::cerr << "Khong the mo file." << std::endl;
+void thiThu(const std::vector<CauHoi>& danhSachCauHoi, int soLuongCauHoi) {
+    if (soLuongCauHoi > danhSachCauHoi.size()) {
+        std::cerr << "Khong du cau hoi de thi." << std::endl;
         return;
     }
 
-    std::string maCauHoi, noiDung, dapAn[DAPAN], dapAnDung;
-    int diem = 0;
-    std::string dapAnCuaBan;
+    int* chiso = new int[danhSachCauHoi.size()];
+    for (int i = 0; i < danhSachCauHoi.size(); i++) {
+        chiso[i] = i;
+    }
 
-    // Duyệt qua từng câu hỏi trong đề
-    for (int i = 0; i < danhSachCauHoi.size(); ++i) {
-        bool found = false;
-        file.clear(); // Đặt lại trạng thái của file
-        file.seekg(0); // Di chuyển con trỏ về đầu file
+    hoanVi(chiso, danhSachCauHoi.size());
 
-        // Đọc từng câu hỏi từ file danh_sach_cau_hoi.txt
-        while (std::getline(file, maCauHoi)) {
-            std::getline(file, noiDung);
-            for (int j = 0; j < DAPAN; ++j) {
-                std::getline(file, dapAn[j]);
-            }
-            std::getline(file, dapAnDung);
+    int soCauDung = 0;
+    std::ofstream lichSu("lich_su.txt", std::ios::app);
 
-            // So sánh mã câu hỏi
-            if (maCauHoi == danhSachCauHoi[i].getMaCauHoi()) {
-                found = true;
-                // So sánh đáp án
-                std::cout << "Cau hoi " << (i + 1) << ":" << std::endl;
-                danhSachCauHoi[i].hienThi();
-                std::cout << "Nhap dap an cua ban (A/B/C/D): ";
-                std::cin >> dapAnCuaBan;
-                std::cout << std::endl;
-                if (("Dap an chinh xac : " + dapAnCuaBan) == dapAnDung) {
-                    diem++;
-                }
-                break;
-            }
-        }
+    for (int i = 0; i < soLuongCauHoi; i++) {
+        const CauHoi& cauHoi = danhSachCauHoi[chiso[i]];
+        cauHoi.hienThi();
+        std::string dapAn;
+        std::cout << "Nhap dap an cua ban (A/B/C/D): ";
+        std::cin >> dapAn;
 
-        if (!found) {
-            std::cerr << "Khong tim thay cau hoi co ma: " << danhSachCauHoi[i].getMaCauHoi() << std::endl;
+        //lichSu << "Ma cau hoi: " << cauHoi.getMaCauHoi() << std::endl;
+        //lichSu << "Noi dung: " << cauHoi.getNoiDung() << std::endl;
+        /*for (int j = 0; j < DAPAN; ++j) {
+            lichSu << cauHoi.getDapAn(j) << std::endl;
+        }*/
+        //lichSu << "Dap an ban chon: " << dapAn << std::endl;
+        //lichSu << "Dap an dung: " << cauHoi.getDapAnDung() << std::endl;
+        //lichSu << "-----------------------------" << std::endl;
+
+        // Extracting the correct answer character from dapAnDung
+        std::string correctAnswer = cauHoi.getDapAnDung();
+        if (("Dap an chinh xac : " + dapAn) == correctAnswer) {
+            soCauDung++;
         }
     }
-    std::cout << "Ban da tra loi dung " << diem << " tren " << danhSachCauHoi.size() << " cau hoi." << std::endl;
-    file.close();
+
+    double diem = (double)soCauDung / soLuongCauHoi * 10;
+    std::cout << "So cau tra loi dung: " << soCauDung << "/" << soLuongCauHoi << std::endl;
+    std::cout << "Diem cua ban: " << diem << std::endl;
+    lichSu << "So cau tra loi dung: " << soCauDung << "/" << soLuongCauHoi << std::endl;
+    lichSu << "Diem cua ban: " << diem << std::endl;
+    lichSu << "=============================" << std::endl;
+
+    lichSu.close();
+    delete[] chiso;
 }
 
 
+void hienThiLichSu() {
+    std::ifstream file("lich_su.txt");
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            std::cout << line << std::endl;
+        }
+        file.close();
+    }
+    else {
+        std::cerr << "Khong the mo file lich su." << std::endl;
+    }
+}
+
 int main() {
     std::vector<CauHoi> danhSachCauHoi;
-
     docDuLieuTuFile(danhSachCauHoi);
 
     int luaChon;
     do {
-        std::cout << "1. Hien thi tat ca cac cau hoi" << std::endl;
-        std::cout << "2. Them cau hoi moi" << std::endl;
+        std::cout << "1. Them cau hoi" << std::endl;
+        std::cout << "2. Hien thi tat ca cau hoi" << std::endl;
         std::cout << "3. Sua cau hoi" << std::endl;
         std::cout << "4. Xoa cau hoi" << std::endl;
-        std::cout << "5. Sinh de thi ngau nhien" << std::endl;
-        std::cout << "6. Thi thu" << std::endl;
+        std::cout << "5. Thi thu" << std::endl;
+        std::cout << "6. Hien thi lich su thi thu" << std::endl;
         std::cout << "0. Thoat" << std::endl;
-        std::cout << "Lua chon cua ban: ";
+        std::cout << "Nhap lua chon: ";
         std::cin >> luaChon;
 
         switch (luaChon) {
         case 1:
-            hienThiTatCaCauHoi(danhSachCauHoi);
+            themCauHoi(danhSachCauHoi);
             break;
         case 2:
-            themCauHoi(danhSachCauHoi);
+            hienThiTatCaCauHoi(danhSachCauHoi);
             break;
         case 3:
             suaCauHoi(danhSachCauHoi);
@@ -367,29 +335,20 @@ int main() {
             xoaCauHoi(danhSachCauHoi);
             break;
         case 5: {
-            int soCauHoi;
-            std::cout << "Nhap so luong cau hoi muon tao de thi: ";
-            std::cin >> soCauHoi;
-            std::cin.ignore(); // ignore newline character left in buffer
-            sinhDeThiNgauNhien(danhSachCauHoi, soCauHoi);
+            int soLuongCauHoi;
+            std::cout << "Nhap so luong cau hoi muon thi: ";
+            std::cin >> soLuongCauHoi;
+            thiThu(danhSachCauHoi, soLuongCauHoi);
             break;
         }
-        case 6: {
-            std::vector<CauHoi> deThi;
-            docDeTuFile(deThi);
-            if (!deThi.empty()) {
-                thi(deThi);
-            }
-            else {
-                std::cout << "Khong co de thi nao duoc tao. Vui long tao de thi truoc." << std::endl;
-            }
+        case 6:
+            hienThiLichSu();
             break;
-        }
         case 0:
-            std::cout << "Ket thuc chuong trinh." << std::endl;
+            std::cout << "Thoat chuong trinh." << std::endl;
             break;
         default:
-            std::cout << "Lua chon khong hop le. Vui long thu lai." << std::endl;
+            std::cerr << "Lua chon khong hop le." << std::endl;
             break;
         }
     } while (luaChon != 0);

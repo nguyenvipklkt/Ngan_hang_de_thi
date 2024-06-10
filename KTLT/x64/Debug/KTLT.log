@@ -1,3 +1,4 @@
 ﻿  KTLT.cpp
-C:\Project\KTLT\KTLT\KTLT.cpp(280,25): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Project\KTLT\KTLT\KTLT.cpp(236,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Project\KTLT\KTLT\KTLT.cpp(254,38): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   KTLT.vcxproj -> C:\Project\KTLT\x64\Debug\KTLT.exe
